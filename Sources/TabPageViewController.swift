@@ -27,7 +27,7 @@ open class TabPageViewController: UIPageViewController {
         return self.view.bounds.width
     }
     fileprivate var shouldScrollCurrentBar: Bool = true
-    lazy fileprivate var tabView: TabView = self.configuredTabView()
+    lazy open var tabView: TabView = self.configuredTabView()
     fileprivate var statusView: UIView?
     fileprivate var statusViewHeightConstraint: NSLayoutConstraint?
     fileprivate var tabBarTopConstraint: NSLayoutConstraint?
@@ -166,7 +166,7 @@ extension TabPageViewController {
                                       toItem: view,
                                       attribute: .leading,
                                       multiplier: 1.0,
-                                      constant: 16.0)
+                                      constant: 0.0)
 
         let right = NSLayoutConstraint(item: view!,
                                        attribute: .trailing,
@@ -174,7 +174,7 @@ extension TabPageViewController {
                                        toItem: tabView,
                                        attribute: .trailing,
                                        multiplier: 1.0,
-                                       constant: 16.0)
+                                       constant: 0.0)
 
         view.addConstraints([top, left, right])
 
