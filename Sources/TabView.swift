@@ -61,7 +61,7 @@ internal class TabView: UIView {
             toItem: self,
             attribute: .leading,
             multiplier: 1.0,
-            constant: 0.0)
+            constant: 16.0)
 
         let bottom = NSLayoutConstraint (item: self,
             attribute: .bottom,
@@ -77,7 +77,7 @@ internal class TabView: UIView {
             toItem: contentView,
             attribute: .trailing,
             multiplier: 1.0,
-            constant: 0.0)
+            constant: 16.0)
 
         contentView.translatesAutoresizingMaskIntoConstraints = false
         self.addConstraints([top, left, bottom, right])
