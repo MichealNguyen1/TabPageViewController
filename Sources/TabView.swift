@@ -10,7 +10,7 @@ import UIKit
 
 internal class TabView: UIView {
 
-    var pageItemPressedBlock: ((_ index: Int, _ direction: UIPageViewControllerNavigationDirection) -> Void)?
+    var pageItemPressedBlock: ((_ index: Int, _ direction: UIPageViewController.NavigationDirection) -> Void)?
     var pageTabItems: [String] = [] {
         didSet {
             pageTabItemsCount = pageTabItems.count
@@ -47,7 +47,7 @@ internal class TabView: UIView {
         addSubview(contentView)
         contentView.backgroundColor = option.tabBackgroundColor.withAlphaComponent(option.tabBarAlpha)
 
-        let top = NSLayoutConstraint(item: contentView,
+        let top = NSLayoutConstraint(item: contentView != nil ? contentView! : UIView(),
             attribute: .top,
             relatedBy: .equal,
             toItem: self,
@@ -55,7 +55,7 @@ internal class TabView: UIView {
             multiplier: 1.0,
             constant: 0.0)
 
-        let left = NSLayoutConstraint(item: contentView,
+        let left = NSLayoutConstraint(item: contentView != nil ? contentView! : UIView(),
             attribute: .leading,
             relatedBy: .equal,
             toItem: self,
@@ -85,13 +85,13 @@ internal class TabView: UIView {
         let bundle = Bundle(for: TabView.self)
         let nib = UINib(nibName: TabCollectionCell.cellIdentifier(), bundle: bundle)
         collectionView.register(nib, forCellWithReuseIdentifier: TabCollectionCell.cellIdentifier())
-        cellForSize = nib.instantiate(withOwner: nil, options: nil).first as! TabCollectionCell
+        cellForSize = nib.instantiate(withOwner: nil, options: nil).first as? TabCollectionCell
 
         collectionView.scrollsToTop = false
 
         currentBarView.backgroundColor = option.currentColor
         currentBarViewHeightConstraint.constant = option.currentBarHeight
-        if !isInfinity {
+        if !isInfinity, let currentBarView = currentBarView {
             currentBarView.removeFromSuperview()
             collectionView.addSubview(currentBarView)
             currentBarView.translatesAutoresizingMaskIntoConstraints = false
@@ -114,7 +114,7 @@ internal class TabView: UIView {
             collectionView.addConstraints([top, left])
         }
 
-        bottomBarViewHeightConstraint.constant = 1.0 / UIScreen.main.scale
+        bottomBarViewHeightConstraint.constant = 0.0
     }
 
     required internal init?(coder aDecoder: NSCoder) {
@@ -161,7 +161,7 @@ extension TabView {
             let distance = (currentCell.frame.width / 2.0) + (nextCell.frame.width / 2.0)
             let scrollRate = contentOffsetX / frame.width
 
-            if fabs(scrollRate) > 0.6 {
+            if abs(scrollRate) > 0.6 {
                 nextCell.highlightTitle()
                 currentCell.unHighlightTitle()
             } else {
@@ -169,7 +169,7 @@ extension TabView {
                 currentCell.highlightTitle()
             }
 
-            let width = fabs(scrollRate) * (nextCell.frame.width - currentCell.frame.width)
+            let width = abs(scrollRate) * (nextCell.frame.width - currentCell.frame.width)
             if isInfinity {
                 let scroll = scrollRate * distance
                 collectionView.contentOffset.x = collectionViewContentOffsetX + scroll
@@ -277,7 +277,7 @@ extension TabView {
     fileprivate func deselectVisibleCells() {
         collectionView
             .visibleCells
-            .flatMap { $0 as? TabCollectionCell }
+            .compactMap { $0 as? TabCollectionCell }
             .forEach { $0.isCurrent = false }
     }
 }
@@ -303,7 +303,7 @@ extension TabView: UICollectionViewDataSource {
         cell.option = option
         cell.isCurrent = fixedIndex == (currentIndex % pageTabItemsCount)
         cell.tabItemButtonPressedBlock = { [weak self, weak cell] in
-            var direction: UIPageViewControllerNavigationDirection = .forward
+            var direction: UIPageViewController.NavigationDirection = .forward
             if let pageTabItemsCount = self?.pageTabItemsCount, let currentIndex = self?.currentIndex {
                 if self?.isInfinity == true {
                     if (indexPath.item < pageTabItemsCount) || (indexPath.item < currentIndex) {
