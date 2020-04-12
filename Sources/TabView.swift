@@ -22,7 +22,7 @@ open  class TabView: UIView {
     fileprivate var isInfinity: Bool = false
     fileprivate var option: TabPageOption = TabPageOption()
     fileprivate var beforeIndex: Int = 0
-    fileprivate var currentIndex: Int = 0
+    open var currentIndex: Int = 0
     fileprivate var pageTabItemsCount: Int = 0
     fileprivate var shouldScrollToItem: Bool = false
     fileprivate var pageTabItemsWidth: CGFloat = 0.0
